@@ -1,5 +1,5 @@
 # CONTEXT
-"Job Hunter X" — a high-density, professional job search tool using React (Vite) and an Express backend. All external API calls must be proxied through the backend; no API keys are exposed to the frontend.
+Job Hunter is a job search tool using React (Vite) and an Express backend. It searches and aggregates job results from Reed UK, NHS UK, jSearch (US and UK) and Adzuna (US and UK). Seen jobs are marked, and it uses Zustand and TanQuery for storing and caching. It has a beta AI filter using Groq to determine relevance of NHS job results which use a very broad keyword search.
 
 # TECHNICAL STACK
 - Frontend:     React (Vite + JSX)
