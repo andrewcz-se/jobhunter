@@ -89,7 +89,7 @@ vite.config.js
 # API AUTHENTICATION NOTES
 **Reed API:**
 - HTTP Basic Auth — use REED_KEY as the username, empty string as password.
-- Encode as Authorization: Basic base64(REED_KEY:)
+- Encode as Authorisation: Basic base64(REED_KEY:)
 - Base URL: https://www.reed.co.uk/api/1.0
 - Docs: https://www.reed.co.uk/developers/Jobseeker
 
@@ -104,9 +104,7 @@ vite.config.js
 - Docs: https://developer.adzuna.com/swagger/spec/test2.json
 	
 **NHS:**
-- "NHS Jobs Self-Serve Job Adverts API" specification is in @nhs_self_serve_api_v0.6.json (search_xml)
 - There is no authentication required.
-- Example payload response: @nhs.xml
 - Example URL: https://www.jobs.nhs.uk/api/v1/search_xml?keyword=HL7&location=london&distance=30&sort=publicationDate&page=1&limit=50&staffGroup=ADMINISTRATIVE_AND_CLERICAL
 
 # Development Conventions
@@ -117,12 +115,12 @@ vite.config.js
 - **Colors:** 
   - **NHS Blue:** `#005eb8` used for focus states, primary buttons, and accents.
   - **Status Red:** Used for "Previously Viewed" indicators and error states.
-- **Data Density:** High information density. Minimize white space where it serves no structural purpose.
+- **Data Density:** High information density. Minimise white space where it serves no structural purpose.
 
 ## Technical Guidelines
 - **No CDNs:** All assets, including fonts, must be installed via `pnpm`.
 - **API Security:** Frontend must **never** make direct calls to external APIs. All requests must go through the `/api` prefix on the Express server to protect API keys.
-- **Data Normalization:** All job sources must be normalized to a consistent schema in the backend proxy before being sent to the frontend.
+- **Data Normalisation:** All job sources must be normalised to a consistent schema in the backend proxy before being sent to the frontend.
 - **Testing:** New features or bug fixes must be verified with the corresponding API keys in a local environment using `pnpm dev`.
 
 ## Key Files
@@ -200,7 +198,7 @@ Added support to search the US job market as well:
 	- If a user selects "US" as the country DO NOT RUN the Reed search as Reed only posts jobs from the UK/GB
 
 ## PHASE 7 COMPLETED: Add a Privacy Modal
-- Created a privacy modal using the text in @privacy.md
+- Created a privacy modal using the text in @privacy.md as an example if hosted on Vercel.
 - Put a link to the Privacy Modal at the bottom of @Login.jsx
 - Put a link to the Privacy Modal in the footer of @App.jsx
 
@@ -212,11 +210,11 @@ Implemented a basic secure password-protected entry for the project.
 - **Express Route**: Created an Express API route at `server/api/verify.js` that compares a POSTed password against `process.env.SITE_PASSWORD`. This is a server-side check to prevent the password from being exposed in the client-side bundle.
 - **Login Component**: Creates a `Login.jsx` component that sends the user's input to the API. 
 - **App Logic**: Wrapped the main application in `App.jsx` so that content only renders if a `vault_access` key is present and valid in `localStorage`. 
-- **Persistence**: Ensured the "authorized" state persists across page refreshes using `useEffect`.
+- **Persistence**: Ensured the "authorised" state persists across page refreshes using `useEffect`.
 
-## PHASE 9 COMPLETED: Modularized api/search.js 
+## PHASE 9 COMPLETED: Modularised api/search.js 
 
-Modularized `server/api/search.js`:
+Modularised `server/api/search.js`:
 
 - Split this into provider-specific modules (e.g., `server/api/providers/reed.js`, `server/api/providers/adzuna.js`) to improve maintainability and simplify testing.
 - Created `server/api/providers/` directory.
@@ -225,7 +223,7 @@ Modularized `server/api/search.js`:
 - Implemented `server/api/providers/jsearch.js`: Encapsulates JSearch search and detail logic.
 - Refactored `server/api/search.js`: Simplified the main handler to import and delegate to the new provider modules based on the source parameter.
 
-This refactoring improves maintainability and simplifies the addition of new providers without further bloating the main search handler. The unified data normalization has been preserved in each module to ensure no impact on the frontend.
+This refactoring improves maintainability and simplifies the addition of new providers without further bloating the main search handler. The unified data normalisation has been preserved in each module to ensure no impact on the frontend.
 
 ## PHASE 10 COMPLETED: Allowed the user to select which sites to Search
 
@@ -282,13 +280,13 @@ This refactoring improves maintainability and simplifies the addition of new pro
 
 ## PHASE 13 COMPLETED : GROQ SANITISATION OF NHS SEARCH results
 
-Problem: The NHS API uses the keywords in an extremely broad manner. For example a search for "java developer" will return all results with the word "develop" which could be a completely irrelevant job for a cleaner or warehouse worker, as the job advert had the word "develop" in. To address the issue of broad keyword matching in the NHS API while respecting Groq's token-per-minute (TPM) limits and minimizing API costs, implemented a "User-Initiated Smart Sanitization" strategy using the groq-sdk.
+Problem: The NHS API uses the keywords in an extremely broad manner. For example a search for "java developer" will return all results with the word "develop" which could be a completely irrelevant job for a cleaner or warehouse worker, as the job advert had the word "develop" in. To address the issue of broad keyword matching in the NHS API while respecting Groq's token-per-minute (TPM) limits and minimising API costs, implemented a "User-Initiated Smart Sanitisation" strategy using the groq-sdk.
 
 1. Technical Architecture
 
-A. Backend: Sanitization Endpoint
- * Action-Based Routing: Created a dedicated `server/api/sanitize.js` endpoint to handle the sanitization request.
- * Prompt Engineering: Used a "Few-Shot" or "System Role" prompt optimized for extreme brevity.
+A. Backend: Sanitisation Endpoint
+ * Action-Based Routing: Created a dedicated `server/api/sanitize.js` endpoint to handle the sanitisation request.
+ * Prompt Engineering: Used a "Few-Shot" or "System Role" prompt optimised for extreme brevity.
      * Input: The original search keywords and a list of NHS job objects containing only jobId, title, and the truncated description.
      * Example Prompt Template:
 
@@ -299,12 +297,12 @@ A. Backend: Sanitization Endpoint
 		Task: Identify jobs directly return relevant to the keywords. Exclude results where keywords appear in unrelated contexts (e.g., if searching for "Developer", exclude "Property Developer" or "Cleaners").
 		Output: JSON array of relevant IDs only.
 		
- * Token Optimization:
+ * Token Optimisation:
      * Field Selection: Send only the jobId, title, and the already-truncated NHS description.
      * Efficiency Calculation: An average NHS snippet is ~60 tokens. 50 jobs × 60 tokens ≈ 3,000 tokens. Adding titles and prompt overhead, a single request totals ~4,000–5,000 tokens, fitting comfortably within the 8,000–12,000 TPM on Groq limit for models like llama-3.3-70b-versatile and gpt-oss-120b.
 
 B. Frontend: Trigger & State Management
- * Sanitization Trigger: Added a "Refine NHS Results (AI)" button in the JobList component. This button will only appear when NHS results are visible.
+ * Sanitisation Trigger: Added a "Refine NHS Results (AI)" button in the JobList component. This button will only appear when NHS results are visible.
  * Mutation Hook: Added a useSanitizeNhs mutation to the useJobSearch hook.
      * Execution: When clicked, the frontend gathers all current NHS jobs from the cache and sends them to the backend.
      * State Update: Upon receiving the "Relevant IDs" array from Groq, the frontend updates the jobResults cache by updating (Phase 1) or removing (Phase 2) the irrelevant NHS entries. This ensures the UI updates instantly without a full page re-fetch.
@@ -312,12 +310,12 @@ B. Frontend: Trigger & State Management
 2. Workflow Summary
  1. Search Phase: User performs a standard search; raw NHS results are displayed.
  2. Observation Phase: User notices irrelevant results (e.g., "Cleaner" appearing in a "Java Developer" search).
- 3. Sanitization Phase: User clicks "Refine NHS Results."
+ 3. Sanitisation Phase: User clicks "Refine NHS Results."
  4. Processing Phase:
      * Frontend sends NHS data + keywords to dedicated `server/api/sanitize.js` endpoint
      * Backend prompts Groq using a highly compressed format.
      * Groq returns a simple list of "Good IDs."
- 5. Finalization: 
+ 5. Finalisation: 
 	 * PHASE 1 - TESTING THE SANITISATION: Irrelevant jobs stay in the list, but are marked as "POSSIBLY NOT RELEVANT"; the "Refine" button is replaced with a "Sanitized" badge.
 	 * PHASE 2 - ONCE TESTING IS APPROVED: Update code so irrelevant jobs disappear from the list.
 
@@ -328,7 +326,7 @@ B. Frontend: Trigger & State Management
  * Low Latency: Groq's high-speed inference ensures the "sanitization" feels near-instant to the user.
 
 4. Limitations & Mitigation
- * TPM Spikes: If a user tries to sanitize 100+ jobs at once, the backend will automatically chunk the request into groups of 25 to avoid hitting the 8k limit in a single burst.
+ * TPM Spikes: If a user tries to sanitise 100+ jobs at once, the backend will automatically chunk the request into groups of 25 to avoid hitting the 8k limit in a single burst.
  * Packages should be installed using pnpm
 
 ## PHASE 14 COMPLETED: Migration to Express Backend
