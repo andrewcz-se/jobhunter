@@ -55,7 +55,7 @@ export default function JobList() {
         <div className="flex flex-col md:flex-row md:items-center gap-4 border-b border-black pb-4">
           <div className="flex items-center gap-2">
             <span className="clinical-label mb-0 mr-4">Filter:</span>
-            {['ALL', 'REED', 'JSEARCH', 'ADZUNA', 'NHS'].map((s) => (
+            {['ALL', 'REED', 'JSEARCH', 'ADZUNA', 'NHS', 'ARBETS'].map((s) => (
               <button
                 key={s}
                 onClick={() => setFilter(s)}

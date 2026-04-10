@@ -14,8 +14,6 @@ export default function SearchForm() {
     sources: ['reed', 'jsearch', 'adzuna', 'nhs']
   });
 
-  const isUkOnlyDisabled = formData.country === 'us';
-
   const handleSourceToggle = (source) => {
     setFormData(prev => {
       const sources = prev.sources.includes(source)
@@ -27,9 +25,14 @@ export default function SearchForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const filteredSources = isUkOnlyDisabled 
-      ? formData.sources.filter(s => s !== 'reed' && s !== 'nhs') 
-      : formData.sources;
+    let filteredSources = formData.sources;
+    if (formData.country === 'us') {
+      filteredSources = formData.sources.filter(s => s !== 'reed' && s !== 'nhs' && s !== 'arbets' && s !== 'englishjobsearch');
+    } else if (formData.country === 'se') {
+      filteredSources = formData.sources.filter(s => s === 'jsearch' || s === 'arbets' || s === 'englishjobsearch');
+    } else if (formData.country === 'gb') {
+      filteredSources = formData.sources.filter(s => s !== 'arbets' && s !== 'englishjobsearch');
+    }
     
     if (filteredSources.length === 0) {
       alert('Please select at least one job source.');
@@ -63,17 +66,26 @@ export default function SearchForm() {
             value={formData.country}
             onChange={(e) => {
               const newCountry = e.target.value;
+              let newSources = formData.sources;
+              if (newCountry === 'us') {
+                newSources = formData.sources.filter(s => s !== 'reed' && s !== 'nhs' && s !== 'arbets' && s !== 'englishjobsearch');
+              } else if (newCountry === 'se') {
+                newSources = formData.sources.filter(s => s === 'jsearch' || s === 'arbets' || s === 'englishjobsearch');
+                if (!newSources.includes('arbets')) newSources.push('arbets');
+                if (!newSources.includes('englishjobsearch')) newSources.push('englishjobsearch');
+              } else if (newCountry === 'gb') {
+                newSources = formData.sources.filter(s => s !== 'arbets' && s !== 'englishjobsearch');
+              }
               setFormData({ 
                 ...formData, 
                 country: newCountry,
-                sources: newCountry === 'us' 
-                  ? formData.sources.filter(s => s !== 'reed' && s !== 'nhs')
-                  : formData.sources
+                sources: newSources
               });
             }}
           >
             <option value="gb">UK</option>
             <option value="us">US</option>
+            <option value="se">Sweden</option>
           </select>
         </div>
         <div className="md:col-span-2">
@@ -111,16 +123,36 @@ export default function SearchForm() {
         <div className="flex-1 min-w-[200px]">
           <label className="clinical-label">Job Sources</label>
           <div className="flex flex-wrap gap-4 pt-2">
-            {['reed', 'jsearch', 'adzuna', 'nhs'].map(source => {
-              const isUkOnly = source === 'reed' || source === 'nhs';
-              const isDisabled = isUkOnly && isUkOnlyDisabled;
+            {['reed', 'jsearch', 'adzuna', 'nhs', 'arbets', 'englishjobsearch'].map(source => {
+              let isDisabled = false;
+              let suffix = '';
+              if (formData.country === 'us') {
+                if (source === 'reed' || source === 'nhs') {
+                  isDisabled = true;
+                  suffix = ' (UK ONLY)';
+                } else if (source === 'arbets' || source === 'englishjobsearch') {
+                  isDisabled = true;
+                  suffix = ' (SE ONLY)';
+                }
+              } else if (formData.country === 'se') {
+                if (source === 'reed' || source === 'nhs' || source === 'adzuna') {
+                  isDisabled = true;
+                  suffix = source === 'adzuna' ? ' (UK/US)' : ' (UK ONLY)';
+                }
+              } else if (formData.country === 'gb') {
+                if (source === 'arbets' || source === 'englishjobsearch') {
+                  isDisabled = true;
+                  suffix = ' (SE ONLY)';
+                }
+              }
+
               return (
               <div key={source} className="flex items-center space-x-2">
                 <input
                   id={`source-${source}`}
                   type="checkbox"
                   className="w-4 h-4 clinical-border accent-nhs-blue disabled:opacity-50"
-                  checked={formData.sources.includes(source)}
+                  checked={formData.sources.includes(source) && !isDisabled}
                   onChange={() => handleSourceToggle(source)}
                   disabled={isDisabled}
                 />
@@ -131,7 +163,7 @@ export default function SearchForm() {
                     isDisabled ? "text-gray-400" : "text-black"
                   )}
                 >
-                  {source} {isDisabled && "(UK ONLY)"}
+                  {source} {isDisabled && suffix}
                 </label>
               </div>
             )})}

@@ -1,5 +1,5 @@
 # CONTEXT
-Job Hunter is a job search tool using React (Vite) and an Express backend. It searches and aggregates job results from Reed UK, NHS UK, jSearch (US and UK) and Adzuna (US and UK). Seen jobs are marked, and it uses Zustand and TanQuery for storing and caching. It has a beta AI filter using Groq to determine relevance of NHS job results which use a very broad keyword search.
+Job Hunter is a job search tool using React (Vite) and an Express backend. It searches and aggregates job results from Reed UK, NHS UK, jSearch (US, SE and UK), Arbetsförmedlingen (SE) and Adzuna (US and UK). Seen jobs are marked, and it uses Zustand and TanQuery for storing and caching. It has a beta AI filter using Groq to determine relevance of NHS job results which use a very broad keyword search.
 
 # TECHNICAL STACK
 - Frontend:     React (Vite + JSX)
@@ -59,6 +59,7 @@ This will:
       adzuna.js
       jsearch.js
       reed.js
+	  jobtech.js
     search.js ← Central API proxying route
     verify.js
     sanitize.js
@@ -81,7 +82,7 @@ vite.config.js
 ```
 
 # SECURITY CONSTRAINTS
-- API keys (REED_KEY, TAVILY_KEY, OPENWEBNINJA_KEY) must only exist in .env and be accessed via process.env inside the Express backend
+- API keys (REED_KEY, TAVILY_KEY, OPENWEBNINJA_KEY, GROQ_API_KEY) must only exist in .env and be accessed via process.env inside the Express backend
 - The frontend must never import or reference any API key
 - .env must be in .gitignore; only .env.example is committed
 - CRITICAL - AXIOS MUST BE PINNED TO 1.14.0
@@ -340,5 +341,32 @@ Migrated the backend from Vercel Serverless Functions to a standalone Express se
 - **Development Workflow**: Updated `package.json` to allow running both frontend and backend concurrently via `pnpm dev`.
 - **Cleanup**: Removed `vercel.json` and the root-level `/api` directory.
 
+## PHASE 15 COMPLETED: Added support for Sweden to search Arbetsförmedlingen
 
+1. Created server/api/providers/jobtech.js:
+   - Uses the Swedish JobTech API directly based on the specifications.
+   - Handles Swedish specific municipality logic (Stockholm, Gothenburg, Malmö) by assigning corresponding IDs, checking boundaries, and mapping their longitudes/latitudes along with radius.
+   - Incorporates the URLSearchParams format and guarantees strict API requests structure while using console.error to output the executed queries.
+   - Normalizes returned payload into the standard structure expected by the frontend.
+
+2. Updated server/api/search.js Routing:
+   - Added logic to import and map source === 'arbets' queries directly to the newly constructed jobtech.js provider, ensuring they only operate when the country is configured as se.
+
+3. Frontend Adjustments in src/components/SearchForm.jsx:
+   - Appended <option value="se">Sweden</option> to the Country form selection.
+   - Updated the form handlers so arbets automatically appears in the job source toggles.
+   - Integrated logic to dynamically configure and constrain available provider arrays. When "Sweden" is selected, only jsearch and arbets are active job sources (while reed, adzuna, and nhs are properly disabled and labeled).
+
+4. Updated List UI in src/components/JobList.jsx:
+   - Added ARBETS onto the frontend tab layout so Arbetsförmedlingen hits can be separately filtered in the result view.
+
+5. Tweaked server/api/providers/jsearch.js:
+   - Outfitted handling to resolve queries mapped to Sweden (se) by routing fallback parameters correctly (e.g., using kr for currency layout and returning Sweden for unstructured locations vs UK or USA).
+
+## PHASE 16 COMPLETED: Added support for Sweden to search EnglishJobSearch.se
+   
+1. Installed cheerio: Added cheerio to dependencies using pnpm to enable HTML parsing on the server-side.
+2. Created englishjobsearch.js: Built the server/api/providers/englishjobsearch.js module. It uses axios to fetch data and cheerio to parse the HTML responses directly from the englishjobsearch.se SERP endpoints, matching the logic for dynamically structuring URL strings based on whether the query or location arguments are provided. It maps the parsed data into the standard JSON response format used across the platform.
+3. Updated search.js Router: Registered the new source (englishjobsearch) in server/api/search.js and added the same location restrictions as Arbetsförmedlingen so it only executes when country is set to 'se'.
+4. Updated SearchForm.jsx Frontend: Added englishjobsearch as an available source toggle. The form dynamically restricts selection of this provider strictly to when the user has set the country to "Sweden", and automatically enables it when Sweden is selected alongside jsearch and arbets.
 

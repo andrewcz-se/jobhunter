@@ -103,10 +103,14 @@ export function useJobDetail(jobId, isOpen = false) {
       const results = queryClient.getQueryData(['jobResults']) || [];
       const jobInResults = results.find(j => j.jobId === jobId);
 
-      // JSEARCH, ADZUNA, and NHS data is often self-contained, but if description is missing, we need to fetch
-      if (jobInResults && (jobInResults.source === 'JSEARCH' || jobInResults.source === 'ADZUNA' || jobInResults.source === 'NHS')) {
+      // JSEARCH, ADZUNA, NHS, ARBETS and ENGLISHJOBSEARCH data is often self-contained
+      if (jobInResults && (['JSEARCH', 'ADZUNA', 'NHS', 'ARBETS', 'ENGLISHJOBSEARCH'].includes(jobInResults.source))) {
         if (jobInResults.description) {
           console.log(`Frontend: Returning cached ${jobInResults.source} detail`);
+          return jobInResults;
+        }
+        // If it's ARBETS or ENGLISHJOBSEARCH and we have it, return it even if description is empty (it's all we have)
+        if (jobInResults.source === 'ARBETS' || jobInResults.source === 'ENGLISHJOBSEARCH') {
           return jobInResults;
         }
         console.log(`Frontend: ${jobInResults.source} result missing description, fetching detail...`);
@@ -123,6 +127,7 @@ export function useJobDetail(jobId, isOpen = false) {
         action: 'detail',
         source: source,
         jobId,
+        jobData: jobInResults
       });
       return data;
     },

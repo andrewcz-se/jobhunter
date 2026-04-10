@@ -46,7 +46,7 @@ const PrivacyModal = ({ isOpen, onClose }) => {
           <section>
             <h3 className="font-bold border-b border-black mb-2 uppercase">3. Job Searches & IP Masking</h3>
             <p>
-              Your Job Search preferences are sent to the Job Search APIs provided by Reed, Adzuna and jSearch. When you perform a search, your request is handled via a <span className="font-bold">"Backend-for-Frontend"</span> architecture to protect your identity.
+              Your Job Search preferences are sent to the Job Search APIs provided by Reed, Adzuna, jSearch, NHS UK, Arbetsförmedlingen and EnglishJobSearch.se. When you perform a search, your request is handled via a <span className="font-bold">"Backend-for-Frontend"</span> architecture to protect your identity.
             </p>
             <div className="mt-4 border border-black overflow-hidden">
               <table className="w-full text-left border-collapse">
@@ -59,7 +59,7 @@ const PrivacyModal = ({ isOpen, onClose }) => {
                 <tbody>
                   <tr className="border-b border-black">
                     <td className="p-2 border-r border-black font-bold text-xs uppercase">Direct Masking</td>
-                    <td className="p-2 text-xs">Your IP address is <span className="font-bold">never</span> shared with the third-party job providers (Reed, Adzuna, or jSearch).</td>
+                    <td className="p-2 text-xs">Your IP address is <span className="font-bold">never</span> shared with the third-party job providers (Reed, Adzuna, jSearch, NHS UK, Arbetsförmedlingen and EnglishJobSearch.se).</td>
                   </tr>
                   <tr className="border-b border-black">
                     <td className="p-2 border-r border-black font-bold text-xs uppercase">Proxying</td>

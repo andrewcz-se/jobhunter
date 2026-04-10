@@ -7,7 +7,7 @@ export default async function handleJSearch(params) {
   if (!JSEARCH_KEY) throw new Error('OPENWEBNINJA_KEY not configured');
 
   const normalizeJob = (job) => {
-    const currencySymbol = country === 'gb' ? '£' : '$';
+    const currencySymbol = country === 'gb' ? '£' : (country === 'se' ? 'kr' : '$');
     
     // Improved Location Normalization
     // 1. Use job_location if present (usually a full string like "Dearborn, MI")
@@ -16,7 +16,7 @@ export default async function handleJSearch(params) {
     const rawLocation = job.job_location || 
       `${job.job_city || ''}${job.job_city && job.job_country ? ', ' : ''}${job.job_country || ''}`.trim();
     
-    const finalLocation = rawLocation || (country === 'gb' ? 'UK' : 'USA');
+    const finalLocation = rawLocation || (country === 'gb' ? 'UK' : (country === 'se' ? 'Sweden' : 'USA'));
 
     return {
       source: 'JSEARCH',
@@ -39,7 +39,7 @@ export default async function handleJSearch(params) {
   if (action === 'search') {
     const searchParams = { 
       query: keywords || 'jobs', 
-      location: location || (country === 'gb' ? 'UK' : 'USA'),
+      location: location || (country === 'gb' ? 'UK' : (country === 'se' ? 'Sweden' : 'USA')),
       country: country,
       num_pages: 3,
       date_posted: 'week'

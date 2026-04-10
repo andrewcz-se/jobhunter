@@ -2,6 +2,8 @@ import handleReed from './providers/reed.js';
 import handleJSearch from './providers/jsearch.js';
 import handleAdzuna from './providers/adzuna.js';
 import handleNhs from './providers/nhs.js';
+import handleJobTech from './providers/jobtech.js';
+import handleEnglishJobSearch from './providers/englishjobsearch.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -26,6 +28,16 @@ export default async function handler(req, res) {
          return res.status(400).json({ error: 'NHS jobs are only available in the UK' });
       }
       result = await handleNhs({ action, keywords, location, radius, jobId, jobData });
+    } else if (source === 'arbets') {
+      if (country !== 'se') {
+         return res.status(400).json({ error: 'Arbetsformedlingen jobs are only available in Sweden' });
+      }
+      result = await handleJobTech({ action, keywords, location, radius, jobId, jobData });
+    } else if (source === 'englishjobsearch') {
+      if (country !== 'se') {
+         return res.status(400).json({ error: 'English Job Search jobs are only available in Sweden' });
+      }
+      result = await handleEnglishJobSearch({ action, keywords, location, jobId, jobData });
     } else {
       return res.status(400).json({ error: 'Invalid source' });
     }
