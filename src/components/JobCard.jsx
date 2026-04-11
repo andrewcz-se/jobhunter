@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Building2, MapPin, PoundSterling, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Building2, MapPin, PoundSterling, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useJobStore } from '../store/jobStore';
 import JobDetail from './JobDetail';
@@ -8,6 +8,8 @@ export default function JobCard({ job }) {
   const [isOpen, setIsOpen] = useState(false);
   const markSeen = useJobStore((state) => state.markSeen);
   const isSeen = useJobStore((state) => state.seenJobIds.includes(job.jobId));
+  const toggleSave = useJobStore((state) => state.toggleSave);
+  const isSaved = useJobStore((state) => state.isSaved(job.jobId));
 
   const handleToggle = () => {
     const nextState = !isOpen;
@@ -25,6 +27,11 @@ export default function JobCard({ job }) {
       month: 'short',
       year: 'numeric'
     }).toUpperCase();
+  };
+
+  const handleSaveToggle = (e) => {
+    e.stopPropagation();
+    toggleSave(job);
   };
 
   return (
@@ -77,7 +84,18 @@ export default function JobCard({ job }) {
           </div>
         </div>
 
-        <div className="flex-shrink-0 pt-1">
+        <div className="flex-shrink-0 pt-1 flex items-center gap-2">
+          <button 
+            onClick={handleSaveToggle}
+            className="p-1 hover:bg-gray-100 transition-colors"
+          >
+            <Star 
+              className={clsx(
+                "h-5 w-5",
+                isSaved ? "fill-yellow-400 text-yellow-400" : "text-gray-400"
+              )} 
+            />
+          </button>
           {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
         </div>
       </div>

@@ -104,8 +104,8 @@ export default function SearchForm() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-6">
-        <div className="w-32">
+      <div className="flex flex-col md:flex-row md:items-end gap-6 pt-2">
+        <div className="w-full md:w-32">
           <label className="clinical-label" htmlFor="radius">Radius (miles)</label>
           <select
             id="radius"
@@ -120,7 +120,7 @@ export default function SearchForm() {
           </select>
         </div>
 
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 w-full md:min-w-[200px]">
           <label className="clinical-label">Job Sources</label>
           <div className="flex flex-wrap gap-4 pt-2">
             {['reed', 'jsearch', 'adzuna', 'nhs', 'arbets', 'englishjobsearch'].map(source => {
@@ -170,7 +170,7 @@ export default function SearchForm() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 py-3">
+        <div className="flex items-center space-x-2 py-3 md:py-1">
           <input
             id="fullTime"
             type="checkbox"
@@ -186,7 +186,7 @@ export default function SearchForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="clinical-btn ml-auto md:flex-none md:min-w-[200px]"
+          className="clinical-btn w-full md:w-auto md:min-w-[200px] mt-2 md:mt-0"
         >
           {isLoading ? 'Searching...' : 'Search Jobs'}
         </button>

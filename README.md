@@ -60,6 +60,7 @@ This will:
       jsearch.js
       reed.js
 	  jobtech.js
+	  englishjobsearch.js
     search.js ← Central API proxying route
     verify.js
     sanitize.js
@@ -71,6 +72,7 @@ This will:
     JobDetail.jsx
 	Login.jsx
 	PrivacyModal.jsx
+	SavedJobs.jsx
   /hooks
     useJobSearch.js
   /store
@@ -364,9 +366,26 @@ Migrated the backend from Vercel Serverless Functions to a standalone Express se
    - Outfitted handling to resolve queries mapped to Sweden (se) by routing fallback parameters correctly (e.g., using kr for currency layout and returning Sweden for unstructured locations vs UK or USA).
 
 ## PHASE 16 COMPLETED: Added support for Sweden to search EnglishJobSearch.se
+
+Added a new job search provider to this Express app. The provider is **englishjobsearch.se** — a Swedish English-language job SERP. 
    
 1. Installed cheerio: Added cheerio to dependencies using pnpm to enable HTML parsing on the server-side.
 2. Created englishjobsearch.js: Built the server/api/providers/englishjobsearch.js module. It uses axios to fetch data and cheerio to parse the HTML responses directly from the englishjobsearch.se SERP endpoints, matching the logic for dynamically structuring URL strings based on whether the query or location arguments are provided. It maps the parsed data into the standard JSON response format used across the platform.
 3. Updated search.js Router: Registered the new source (englishjobsearch) in server/api/search.js and added the same location restrictions as Arbetsförmedlingen so it only executes when country is set to 'se'.
 4. Updated SearchForm.jsx Frontend: Added englishjobsearch as an available source toggle. The form dynamically restricts selection of this provider strictly to when the user has set the country to "Sweden", and automatically enables it when Sweden is selected alongside jsearch and arbets.
 
+## PHASE 17 COMPLETED: Added support for Saving Jobs
+
+1. Extended Zustand Store (src/store/jobStore.js):
+    * Added savedJobs to persist job objects with metadata.
+    * Implemented toggleSave, updateSavedJobStatus, and isSaved actions.
+2. Updated JobCard.jsx:
+    * Added a "Star" icon to the job card for easy saving/unsaving directly from results.
+    * The icon fills yellow when a job is saved.
+3. Created SavedJobs.jsx Component:
+    * Displays a list of saved leads.
+    * Allows users to set an Application Status (e.g., "Applied", "Interview Booked") and Applied Date via dropdown and date inputs.
+    * Implemented a CSV Export function that downloads all saved job details, including application metadata.
+4. Updated App.jsx:
+    * Added a navigation header to switch between "Search" and "Saved Jobs" views.
+    * A real-time badge shows the current count of saved jobs.

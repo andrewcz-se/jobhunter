@@ -52,9 +52,9 @@ export default function JobList() {
   return (
     <div className="space-y-6">
       {results.length > 0 && (
-        <div className="flex flex-col md:flex-row md:items-center gap-4 border-b border-black pb-4">
-          <div className="flex items-center gap-2">
-            <span className="clinical-label mb-0 mr-4">Filter:</span>
+        <div className="flex flex-col md:flex-row md:items-center gap-6 border-b border-black pb-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="clinical-label mb-0 mr-2 md:mr-4">Filter:</span>
             {['ALL', 'REED', 'JSEARCH', 'ADZUNA', 'NHS', 'ARBETS'].map((s) => (
               <button
                 key={s}
@@ -69,8 +69,8 @@ export default function JobList() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="clinical-label mb-0 mr-4 md:ml-4">Sort:</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="clinical-label mb-0 mr-2 md:mr-4 md:ml-4">Sort:</span>
             {['RECENT', 'OLDEST'].map((s) => (
               <button
                 key={s}
@@ -86,7 +86,7 @@ export default function JobList() {
           </div>
 
           {hasNhsJobs && (
-            <div className="flex items-center gap-2 md:ml-4">
+            <div className="flex items-center gap-2 flex-wrap md:ml-4">
               {isSanitized ? (
                 <span className="text-[10px] font-bold uppercase px-3 py-1 clinical-border bg-green-50 text-green-700">
                   NHS Sanitized
@@ -106,7 +106,7 @@ export default function JobList() {
             </div>
           )}
 
-          <div className="md:ml-auto text-[10px] font-bold uppercase text-gray-400">
+          <div className="md:ml-auto text-[10px] font-bold uppercase text-gray-400 self-end md:self-center">
             {filteredResults.length} Results
           </div>
         </div>
