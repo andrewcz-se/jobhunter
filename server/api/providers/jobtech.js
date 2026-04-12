@@ -36,9 +36,10 @@ export default async function handleJobTech(params) {
         searchParams.append('municipality', municipalities[locLower]);
         
         if (radius && radius > 0 && coordinates[locLower]) {
-          searchParams.append('lat', coordinates[locLower].lat);
-          searchParams.append('lan', coordinates[locLower].lan);
-          searchParams.append('radius', radius.toString());
+          const { lat, lan } = coordinates[locLower];
+          const radiusKm = Math.round(radius * 1.60934);
+          searchParams.append('position', `${lat},${lan}`);
+          searchParams.append('position.radius', radiusKm.toString());
         }
       } else {
         q = q ? `${q} ${location}` : location;
