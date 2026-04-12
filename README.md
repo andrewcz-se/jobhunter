@@ -1,4 +1,7 @@
-# CONTEXT
+# ABOUT
+
+![Job Hunter](jobhunter.jpg "Job Hunter")
+
 Job Hunter is a job search tool using React (Vite) and an Express backend. It searches and aggregates job results from Reed UK, NHS UK, jSearch (US, SE and UK), Arbetsförmedlingen (SE) and Adzuna (US and UK). Seen jobs are marked, and it uses Zustand and TanQuery for storing and caching. It has a beta AI filter using Groq to determine relevance of NHS job results which use a very broad keyword search.
 
 # TECHNICAL STACK
